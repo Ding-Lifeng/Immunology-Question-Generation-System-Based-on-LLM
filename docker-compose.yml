@@ -1,0 +1,71 @@
+version: "3.4"
+
+services:
+  mysql:
+    container_name: ssadmin-mysql
+    image: mysql:8
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+    volumes:
+      - mysql:/var/lib/mysql/
+      - ./sql/ssadmin_init.sql:/docker-entrypoint-initdb.d/ssadmin_init.sql:ro
+  
+  redis:
+    container_name: ssadmin-redis
+    image: redis:6-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+
+  server:
+    container_name: ssadmin-server
+    build:
+      context: ./ssadmin-server/
+    image: ssadmin-server
+    restart: unless-stopped
+    ports:
+      - "28080:28080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      JAVA_OPTS:
+        ${JAVA_OPTS:-
+          -Xms512m
+          -Xmx512m
+          -Djava.security.egd=file:/dev/./urandom
+        }
+      ARGS:
+        --spring.datasource.url=${DATASOURCE_URL:-jdbc:mysql://ssadmin-mysql:3306/ssadmin?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true}
+        --spring.datasource.username=${DATASOURCE_USERNAME:-root}
+        --spring.datasource.password=${DATASOURCE_PASSWORD:-123456}
+        --spring.redis.host=${REDIS_HOST:-ssadmin-redis}
+    depends_on:
+      - mysql
+      - redis
+
+  web:
+    container_name: ssadmin-web
+    build:
+      context: ./ssadmin-web
+      args:
+        NODE_ENV:
+          ENV=${NODE_ENV:-production}
+          VUE_APP_TITLE=${VUE_APP_TITLE:-SSADMIN管理系统}
+    image: ssadmin-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+volumes:
+  mysql:
+    driver: local
+  redis:
+    driver: local
