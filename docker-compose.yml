@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   mysql:
-    container_name: ssadmin-mysql
+    container_name: my-mysql
     image: mysql:8
     restart: unless-stopped
     tty: true
@@ -13,22 +13,13 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
     volumes:
       - mysql:/var/lib/mysql/
-      - ./sql/ssadmin_init.sql:/docker-entrypoint-initdb.d/ssadmin_init.sql:ro
-  
-  redis:
-    container_name: ssadmin-redis
-    image: redis:6-alpine
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis:/data
+      - ./sql/sql_init.sql:/docker-entrypoint-initdb.d/sql_init.sql:ro
 
   server:
-    container_name: ssadmin-server
+    container_name: my-server
     build:
-      context: ./ssadmin-server/
-    image: ssadmin-server
+      context: ./my-server/
+    image: my-server
     restart: unless-stopped
     ports:
       - "28080:28080"
@@ -41,23 +32,21 @@ services:
           -Djava.security.egd=file:/dev/./urandom
         }
       ARGS:
-        --spring.datasource.url=${DATASOURCE_URL:-jdbc:mysql://ssadmin-mysql:3306/ssadmin?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true}
+        --spring.datasource.url=${DATASOURCE_URL:-jdbc:mysql://my-mysql:3306/exam_generate?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true}
         --spring.datasource.username=${DATASOURCE_USERNAME:-root}
         --spring.datasource.password=${DATASOURCE_PASSWORD:-123456}
-        --spring.redis.host=${REDIS_HOST:-ssadmin-redis}
     depends_on:
       - mysql
-      - redis
 
   web:
-    container_name: ssadmin-web
+    container_name: my-web
     build:
-      context: ./ssadmin-web
+      context: ./my-web
       args:
         NODE_ENV:
           ENV=${NODE_ENV:-production}
-          VUE_APP_TITLE=${VUE_APP_TITLE:-SSADMIN管理系统}
-    image: ssadmin-web
+          VUE_APP_TITLE=${VUE_APP_TITLE:-基于LLM的免疫学出题系统}
+    image: my-web
     restart: unless-stopped
     ports:
       - "80:80"
@@ -66,6 +55,4 @@ services:
 
 volumes:
   mysql:
-    driver: local
-  redis:
     driver: local

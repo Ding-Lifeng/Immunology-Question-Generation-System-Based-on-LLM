@@ -31,20 +31,20 @@ fi
 echo -e "检查docker-compose 命令......${GREEN}通过${NC}"
 
 # 检查 Maven 缓存 volume 是否已经存在
-if docker volume inspect ssadmin-maven-repo &> /dev/null; then
+if docker volume inspect my-maven-repo &> /dev/null; then
     echo -e "${GREEN}Maven 缓存 volume 已存在。${NC}"
 else
     echo -e "${GREEN}创建 Maven 缓存 volume...${NC}"
-    docker volume create --name ssadmin-maven-repo
+    docker volume create --name my-maven-repo
 fi
 
 # 通过容器构建 jar 包
 
 echo -e "开始构建 jar 包..."
 
-docker run -it --rm --name ssadmin-maven \
-    -v ssadmin-maven-repo:/root/.m2 \
-    -v "$PWD/ssadmin-server":/usr/src/mymaven \
+docker run -it --rm --name my-maven \
+    -v my-maven-repo:/root/.m2 \
+    -v "$PWD/my-server":/usr/src/mymaven \
     -w /usr/src/mymaven \
     maven:3.8.4-jdk-8 mvn clean install package -e '-Dmaven.test.skip=true' || { echo -e "${RED}构建 jar 包失败。${NC}"; exit 1; }
 
@@ -60,7 +60,7 @@ echo -e "构建 Docker 镜像......${GREEN}通过${NC}"
 echo -e "检查是否有正在运行的服务..."
 
 # 检查是否有正在运行的 docker-compose 服务
-if docker-compose ps | grep "ssadmin"; then
+if docker-compose ps | grep "my"; then
     echo -e "${GREEN}停止正在运行的服务...${NC}"
     docker-compose down || { echo -e "${RED}停止服务失败。${NC}"; exit 1; }
     echo -e "${GREEN}服务已成功停止。${NC}"

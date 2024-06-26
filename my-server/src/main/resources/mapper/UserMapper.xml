@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.UserMapper">
+    <insert id="insertUser">
+        INSERT INTO user( name, password, real_name, gender, phoneNum, position, school)
+        VALUES(#{name}, #{password}, #{real_name}, #{gender}, #{phoneNum}, #{position}, #{school})
+    </insert>
+    <select id="findUserByUsername" resultType="com.example.demo.entity.User">
+        SELECT * FROM user WHERE name = #{name}
+    </select>
+    <select id="findUserByUid" resultType="com.example.demo.entity.User">
+        SELECT * FROM user WHERE id = #{uid}
+    </select>
+    <update id="updateUserInfo">
+        UPDATE user SET name = #{user.name}, real_name = #{user.real_name}, password = #{user.password}, gender = #{user.gender}, phoneNum = #{user.phoneNum}, position = #{user.position}, school = #{user.school}
+        WHERE id = #{uid}
+    </update>
+</mapper>

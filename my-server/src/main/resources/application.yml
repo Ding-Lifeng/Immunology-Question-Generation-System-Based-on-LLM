@@ -1,0 +1,24 @@
+server:
+  port: 28080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/exam_generate
+    username: root
+    password: Tt010610
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+jwt:
+  secret: 7FseT1VHsHjvIi6DUoRxn24UZ3iQKDE5xlCk6xrOj/Pb85FZ58yihOxiHESLE+eBZid1iSKeheyXz95STOuNgr+Jzou16m5NwRTT1PFGt/Ya7bxFfpwMRdNR38VwnfuwwUYjRbkNRl+Wbp7kSmKRQLPcRMjSeQIy2+K4RV20SgfD0ITVyE9feakhs4fA6RF5pqhI1BjlhIP5kupcpSCY3McFa3I/GaXXSb3T8/emg965KwqibdYusCW9Z7SP4JhgM80aUpfkN6c2Sx+sHeH2xmS/tlgPH4+NwUu9RX1zRWWDrUTF24XVoEUBBigTxZgC5xAG+fLcp0ZdK523mt5wyQ==
+  access_token:
+    expiration: 3600 # in seconds
+  refresh_token:
+    expiration: 604800 # in seconds
+
+api:
+  bluelm:
+    app-id: 3039641945
+    secret: BxPltgnmIBWjkXGY

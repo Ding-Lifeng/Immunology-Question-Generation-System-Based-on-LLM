@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.ExamMapper">
+    <insert id="insertExamContent">
+        INSERT INTO record_exam(uid, time, content, keyPoints)
+        VALUES(#{uid}, #{time}, #{content}, #{keyPoints})
+    </insert>
+
+    <delete id="deleteExam">
+        DELETE FROM record_exam
+        WHERE exam_id = #{exam_id} AND uid = #{uid}
+    </delete>
+
+    <update id="updateExam">
+        UPDATE record_exam SET time = #{time}, content = #{content}
+        WHERE exam_id = #{exam_id} AND uid = #{uid}
+    </update>
+
+    <select id="getExamInfo" resultType="com.example.demo.entity.ExamContent">
+        SELECT * FROM record_exam WHERE uid = #{uid}
+    </select>
+</mapper>
