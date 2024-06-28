@@ -32,6 +32,7 @@
 
 <script>
 import { saveExamContent } from '@/api/dealWithExamContent';
+import { getAccessToken } from '@/utils/auth';
 
 export default {
   name: 'Exam_Generated',
@@ -55,6 +56,11 @@ export default {
   },
   methods: {
     async saveExams() {
+      const token = getAccessToken();
+      if (!token) {
+        this.$message.error('用户未登录，无法保存规划!');
+        return;
+      }
       // 保存试题的逻辑
       try {
         await saveExamContent(this.examData ,this.keyPoints); // 调用 saveExamContent 方法
